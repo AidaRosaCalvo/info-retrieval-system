@@ -17,6 +17,9 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 import sistrecuperacioninformacion.Cluster;
 import sistrecuperacioninformacion.DocDetails;
@@ -117,7 +120,14 @@ public class PrincipalController implements Initializable {
         documents = null;
         try {
             // Cargar los DocDetails
-            documents = TikaLuceneProcessing.procesarDocs(new File("DataTika"));
+            // Crear un nuevo DirectoryChooser
+            DirectoryChooser directoryChooser = new DirectoryChooser();
+            // Configurar el título del cuadro de diálogo
+            directoryChooser.setTitle("Seleccionar carpeta");
+            // Mostrar el cuadro de diálogo y esperar a que el usuario seleccione una carpeta
+            File selectedDirectory = directoryChooser.showDialog(Main.stage);
+            // Si el usuario selecciona un archivo, mostrar su ruta
+            documents = TikaLuceneProcessing.procesarDocs(new File(selectedDirectory.getAbsolutePath()));
             //Cargar los nombres y ponerlos en el text area del visual
             for (int i = 0; i < documents.size(); i++) {
                 JFXTextAreaDocuments.appendText(documents.get(i).getNombre() + "\n");
