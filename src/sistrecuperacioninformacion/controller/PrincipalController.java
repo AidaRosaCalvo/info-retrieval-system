@@ -12,8 +12,11 @@ import java.util.ArrayList;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
@@ -43,6 +46,8 @@ public class PrincipalController implements Initializable {
     private TextArea JFXTextAreaGroups;
     @FXML
     private TextArea JFXTextAreaDocuments;
+    @FXML
+    private Pane JFXPaneContenedorCarga;
 
     //Mis atributoss
     public static Pane paneGlobal;
@@ -115,22 +120,46 @@ public class PrincipalController implements Initializable {
     }
 
     @FXML
+    // Cargar los DocDetails
     private void cargar(MouseEvent event) {
         JFXTextAreaDocuments.clear();
         documents = null;
-        try {
-            // Cargar los DocDetails
+        try {            
             // Crear un nuevo DirectoryChooser
             DirectoryChooser directoryChooser = new DirectoryChooser();
             // Configurar el título del cuadro de diálogo
             directoryChooser.setTitle("Seleccionar carpeta");
             // Mostrar el cuadro de diálogo y esperar a que el usuario seleccione una carpeta
             File selectedDirectory = directoryChooser.showDialog(Main.stage);
-            // Si el usuario selecciona un archivo, mostrar su ruta
-            documents = TikaLuceneProcessing.procesarDocs(new File(selectedDirectory.getAbsolutePath()));
-            //Cargar los nombres y ponerlos en el text area del visual
-            for (int i = 0; i < documents.size(); i++) {
-                JFXTextAreaDocuments.appendText(documents.get(i).getNombre() + "\n");
+            
+            if (selectedDirectory != null) {
+                //Cargar la vista Loading
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/sistrecuperacioninformacion/view/Loading.fxml"));
+                Node node = loader.load();
+                JFXPaneContenedorCarga.getChildren().clear();
+                JFXPaneContenedorCarga.getChildren().add(node);
+                
+                //Procesar el directorio seleccionado en un hilo aparte
+                Thread thread = new Thread(() -> {
+                    try {
+                        // Cargar los documentos
+                        documents = TikaLuceneProcessing.procesarDocs(new File(selectedDirectory.getAbsolutePath()));
+                        // Una vez que el trabajo haya terminado, ejecutar ciertas acciones en el hilo de JavaFX
+                        Platform.runLater(() -> {
+                            //Quitar el loading
+                            JFXPaneContenedorCarga.getChildren().clear();
+                            JFXPaneContenedorCarga.getChildren().add(JFXTextAreaDocuments);
+                            //Cargar los nombres de ficheros y ponerlos en el textarea del visual
+                            for (int i = 0; i < documents.size(); i++) {
+                                JFXTextAreaDocuments.appendText(documents.get(i).getNombre() + "\n");
+                            }
+                        });
+                    } catch (IOException ex) {
+                        Logger.getLogger(PrincipalController.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                });
+                // Iniciar el hilo que carga los documentos
+                thread.start();
             }
         } catch (IOException ex) {
             Logger.getLogger(PrincipalController.class.getName()).log(Level.SEVERE, null, ex);

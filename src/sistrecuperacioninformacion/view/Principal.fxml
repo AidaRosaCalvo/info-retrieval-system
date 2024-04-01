@@ -36,8 +36,12 @@
             <Button layoutX="50.0" layoutY="196.0" mnemonicParsing="false" onMouseClicked="#kmeans" text="K-Means" />
             <Button layoutX="184.0" layoutY="196.0" mnemonicParsing="false" onMouseClicked="#fuzzy" text="Fuzzy C-Means" />
             <Button layoutX="364.0" layoutY="196.0" mnemonicParsing="false" onMouseClicked="#linkage" text="Linkage" />
-            <TextArea fx:id="JFXTextAreaDocuments" editable="false" layoutX="148.0" layoutY="21.0" prefHeight="152.0" prefWidth="325.0" />
             <TextArea fx:id="JFXTextAreaGroups" editable="false" layoutX="47.0" layoutY="252.0" prefHeight="200.0" prefWidth="426.0" />
+            <Pane fx:id="JFXPaneContenedorCarga" layoutX="141.0" layoutY="13.0" prefHeight="170.0" prefWidth="328.0">
+               <children>
+                  <TextArea fx:id="JFXTextAreaDocuments" editable="false" prefHeight="170.0" prefWidth="328.0" />
+               </children>
+            </Pane>
          </children>
       </Pane>
    </children>
