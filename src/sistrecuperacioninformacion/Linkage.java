@@ -9,7 +9,7 @@ import ucar.ma2.Array;
  */
 public class Linkage {
 
-    public static final ArrayList<ArrayList<Cluster>> historicalGroups = new ArrayList<>();
+    public static ArrayList<ArrayList<Cluster>> historicalGroups = new ArrayList<>();
 
     /**
      * Crea la matriz de distancias Para cada documento analiza todos los

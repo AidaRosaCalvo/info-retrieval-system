@@ -55,6 +55,8 @@ public class PrincipalController implements Initializable {
     //make dragable (permitir que la ventana se arraste)
     private double xOffSet = 0;
     private double yOffSet = 0;
+    @FXML
+    private Pane JFXPaneContenedorCargaGrupos;
 
     /**
      * Initializes the controller class.
@@ -177,93 +179,165 @@ public class PrincipalController implements Initializable {
     @FXML
     private void kmeans(MouseEvent event) {
         if (this.documents != null) {
-            JFXTextAreaGroups.clear();
-            ArrayList<ArrayList<DocumentDetails>> clusters = Kmeans.kmeans(documents, 3);
-            String solution = "K-Means:\n";
-            for (int i = 0; i < clusters.size(); i++) {
-                solution += "Grupo " + (i + 1) + ":\n";
-                for (int j = 0; j < clusters.get(i).size(); j++) {
-                    solution += "Documento: " + clusters.get(i).get(j).getNombre() + "\n";
-                }
-                solution += "\n";
+            try {
+                //Cargar la vista Loading
+                cargarLoadingGroups();
+                //Procesar el directorio seleccionado en un hilo aparte
+                Thread thread = new Thread(() -> {
+                    // Limpiar el textarea de grupos
+                    JFXTextAreaGroups.clear();
+                    // Procesar kmeans
+                    ArrayList<ArrayList<DocumentDetails>> clusters = Kmeans.kmeans(documents, 3);
+                    // Una vez que el trabajo haya terminado, ejecutar ciertas acciones en el hilo de JavaFX
+                    Platform.runLater(() -> {
+                        //Quitar el loading
+                        JFXPaneContenedorCargaGrupos.getChildren().clear();
+                        JFXPaneContenedorCargaGrupos.getChildren().add(JFXTextAreaGroups);
+                        //Cargar los nombres de ficheros y ponerlos en el textarea de grupos
+                        // Imprimir los resultados
+                        showKmeas(clusters);
+                    });
+                });
+                // Iniciar el hilo que carga los documentos
+                thread.start();
+            } catch (IOException ex) {
+                Logger.getLogger(PrincipalController.class.getName()).log(Level.SEVERE, null, ex);
             }
-            // Aunque K sea 3 puede que solo se impriman 2 o menos grupos pq pueden que algunos
-            // se queden vacios cuando se actualicen los centroids y estos coincidan
-            JFXTextAreaGroups.setText(solution);
         } else {
             mensaje();
         }
+    }
+
+    private void showKmeas(ArrayList<ArrayList<DocumentDetails>> clusters) {
+        String solution = "K-Means:\n";
+        for (int i = 0; i < clusters.size(); i++) {
+            solution += "Grupo " + (i + 1) + ":\n";
+            for (int j = 0; j < clusters.get(i).size(); j++) {
+                solution += "Documento: " + clusters.get(i).get(j).getNombre() + "\n";
+            }
+            solution += "\n";
+        }
+        // Aunque K sea 3 puede que solo se impriman 2 o menos grupos pq pueden que algunos
+        // se queden vacios cuando se actualicen los centroids y estos coincidan
+        JFXTextAreaGroups.setText(solution);
     }
 
     @FXML
     private void linkage(MouseEvent event) {
         if (this.documents != null) {
-            JFXTextAreaGroups.clear();
-            double[][] distanceMatrix = Linkage.calculateDistanceMatrix(documents);
-            // Realizar el clustering jerárquico aglomerativo utilizando Linkage
-            ArrayList<Cluster> clusters_link = Linkage.performLinkageClustering(documents, distanceMatrix);
-            // Imprimir los resultados del clustering (Clustering Jerárquico Aglomerativo)
-            // A continuación se imprimen los distintos grupos obtenidos en cada momento
-            String solution = "Linkage: \n";
-            for (int i = 0; i < Linkage.historicalGroups.size(); i++) {
-                solution += "Fase " + (i + 1) + " :\n";
-                for (int j = 0; j < Linkage.historicalGroups.get(i).size(); j++) {
-                    solution += "Grupo " + (j + 1) + " :\n";
-                    for (int k = 0; k < Linkage.historicalGroups.get(i).get(j).getIndices().size(); k++) {
-                        //Obtener el indice del documento del listado
-                        int index = Linkage.historicalGroups.get(i).get(j).getIndices().get(k);
-                        //Obtener el documento
-                        DocumentDetails doc = documents.get(index);
-                        solution += "Documento: " + doc.getNombre() + "\n";
-                    }
-                    solution += "\n";
-                }
-                solution += "\n";
+
+            try {
+                //Cargar la vista Loading
+                cargarLoadingGroups();
+                //Procesar el directorio seleccionado en un hilo aparte
+                Thread thread = new Thread(() -> {
+                    // Limpiar el textarea de grupos
+                    JFXTextAreaGroups.clear();
+                    // Procesar linkage
+                    Linkage.historicalGroups = new ArrayList<>(); // reiniciar la lista histórica
+                    JFXTextAreaGroups.clear();
+                    double[][] distanceMatrix = Linkage.calculateDistanceMatrix(documents);
+                    // Realizar el clustering jerárquico aglomerativo utilizando Linkage
+                    Linkage.performLinkageClustering(documents, distanceMatrix);
+
+                    // Una vez que el trabajo haya terminado, ejecutar ciertas acciones en el hilo de JavaFX
+                    Platform.runLater(() -> {
+                        //Quitar el loading
+                        JFXPaneContenedorCargaGrupos.getChildren().clear();
+                        JFXPaneContenedorCargaGrupos.getChildren().add(JFXTextAreaGroups);
+                        //Cargar los nombres de ficheros y ponerlos en el textarea de grupos
+                        // Imprimir los resultados
+                        showLinkage();
+                    });
+                });
+                // Iniciar el hilo que carga los documentos
+                thread.start();
+            } catch (IOException ex) {
+                Logger.getLogger(PrincipalController.class.getName()).log(Level.SEVERE, null, ex);
             }
-            /* String solution = "Linkage:\n";
-            for (int i = 0; i < clusters_link.size(); i++) {
-                solution += "Grupo " + (i + 1) + ":\n";
-                ArrayList<Integer> clusterIndices = clusters_link.get(i).getIndices();
-                solution += clusterIndices + "\n";
-                for (int index : clusterIndices) {
-                    DocumentDetails doc = documents.get(index);
-                    solution += "Nombre del documento: " + doc.getNombre() + "\n";
-                }
-                solution += "\n";
-            }*/
-            JFXTextAreaGroups.setText(solution);
         } else {
             mensaje();
         }
     }
 
-    @FXML
-    private void fuzzy(MouseEvent event
-    ) {
-        if (this.documents != null) {
-            JFXTextAreaGroups.clear();
-            double[][] dataMatrix = FuzzyCMeans.getDataMatrix(documents);
-            // Ejecutar Fuzzy C-Means
-            double[][] membershipMatrix = FuzzyCMeans.fuzzyCMeansClustering(dataMatrix, FuzzyCMeans.NUM_CLUSTERS, FuzzyCMeans.FUZZINESS, FuzzyCMeans.EPSILON, FuzzyCMeans.MAX_ITERATIONS);
-            // Cargar los cluster
-            ArrayList<ArrayList<DocumentDetails>> cluster = FuzzyCMeans.getClusters(membershipMatrix, documents);
-
-            // Imprimir los resultados
-            String solution = "Fuzzy C-means:\n\n";
-            for (int i = 0; i < cluster.size(); i++) {
-                solution += "Grupo " + i + " :\n";
-                for (int j = 0; j < cluster.get(i).size(); j++) {
-                    solution += "Documento " + (j + 1) + " :\n\t";
-                    solution += "Nombre: " + cluster.get(i).get(j).getNombre() + "\n\t";
-                    solution += "Grado de pertenecia al grupo: " + cluster.get(i).get(j).getSignificacion();
-                    solution += "\n";
+    private void showLinkage() {
+        // Imprimir los resultados del clustering (Clustering Jerárquico Aglomerativo)
+        // A continuación se imprimen los distintos grupos obtenidos en cada momento
+        String solution = "Linkage: \n";
+        for (int i = 0; i < Linkage.historicalGroups.size(); i++) {
+            solution += "Fase " + (i + 1) + " :\n";
+            for (int j = 0; j < Linkage.historicalGroups.get(i).size(); j++) {
+                solution += "Grupo " + (j + 1) + " :\n";
+                for (int k = 0; k < Linkage.historicalGroups.get(i).get(j).getIndices().size(); k++) {
+                    //Obtener el indice del documento del listado
+                    int index = Linkage.historicalGroups.get(i).get(j).getIndices().get(k);
+                    //Obtener el documento
+                    DocumentDetails doc = documents.get(index);
+                    solution += "Documento: " + doc.getNombre() + "\n";
                 }
                 solution += "\n";
             }
-            JFXTextAreaGroups.setText(solution);
+            solution += "\n";
+        }
+        JFXTextAreaGroups.setText(solution);
+    }
+
+    @FXML
+    private void fuzzy(MouseEvent event) {
+        if (this.documents != null) {
+            try {
+                //Cargar la vista Loading
+                cargarLoadingGroups();
+                //Procesar el directorio seleccionado en un hilo aparte
+                Thread thread = new Thread(() -> {
+                    // Procesar fuzzy
+                    JFXTextAreaGroups.clear();
+                    double[][] dataMatrix = FuzzyCMeans.getDataMatrix(documents);
+                    // Ejecutar Fuzzy C-Means
+                    double[][] membershipMatrix = FuzzyCMeans.fuzzyCMeansClustering(dataMatrix, 2, FuzzyCMeans.FUZZINESS, FuzzyCMeans.EPSILON, FuzzyCMeans.MAX_ITERATIONS);
+                    // Cargar los cluster
+                    ArrayList<ArrayList<DocumentDetails>> cluster = FuzzyCMeans.getClusters(membershipMatrix, documents);
+
+                    // Una vez que el trabajo haya terminado, ejecutar ciertas acciones en el hilo de JavaFX
+                    Platform.runLater(() -> {
+                        //Quitar el loading
+                        JFXPaneContenedorCargaGrupos.getChildren().clear();
+                        JFXPaneContenedorCargaGrupos.getChildren().add(JFXTextAreaGroups);
+                        //Cargar los nombres de ficheros y ponerlos en el textarea de grupos
+                        // Imprimir los resultados
+                        showfuzzy(cluster);
+                    });
+                });
+                // Iniciar el hilo que carga los documentos
+                thread.start();
+            } catch (IOException ex) {
+                Logger.getLogger(PrincipalController.class.getName()).log(Level.SEVERE, null, ex);
+            }
         } else {
             mensaje();
         }
+    }
+
+    private void showfuzzy(ArrayList<ArrayList<DocumentDetails>> cluster) {
+        String solution = "Fuzzy C-means:\n\n";
+        for (int i = 0; i < cluster.size(); i++) {
+            solution += "Grupo " + i + " :\n";
+            for (int j = 0; j < cluster.get(i).size(); j++) {
+                solution += "Documento " + (j + 1) + " :\n\t";
+                solution += "Nombre: " + cluster.get(i).get(j).getNombre() + "\n\t";
+                solution += "Grado de pertenecia al grupo: " + cluster.get(i).get(j).getSignificacion();
+                solution += "\n";
+            }
+            solution += "\n";
+        }
+        JFXTextAreaGroups.setText(solution);
+    }
+
+    private void cargarLoadingGroups() throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/sistrecuperacioninformacion/view/LoadingGroups.fxml"));
+        Node node = loader.load();
+        JFXPaneContenedorCargaGrupos.getChildren().clear();
+        JFXPaneContenedorCargaGrupos.getChildren().add(node);
     }
 
     private void mensaje() {

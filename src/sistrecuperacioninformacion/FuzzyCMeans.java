@@ -50,7 +50,7 @@ public class FuzzyCMeans {
 
             for (int j = 0; j < tokens.size(); j++) {
                 // Utilizar un valor numérico para representar los tokens
-                dataMatrix[i][j] = tokens.get(j).hashCode();
+                dataMatrix[i][j] = Math.abs(tokens.get(j).hashCode());
             }
         }
 
@@ -394,4 +394,15 @@ public class FuzzyCMeans {
         return clusters;
     }
 
+    /*public static void imprimir(double[][] matrix) {
+        String content = "";
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[0].length; j++) {
+                double number = matrix[i][j];
+                content += number + " ";
+            }
+            content += "\n";
+        }
+        System.out.println(content);
+    }*/
 }

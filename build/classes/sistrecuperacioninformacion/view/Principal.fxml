@@ -34,14 +34,18 @@
                </image>
             </ImageView>
             <Button layoutX="41.0" layoutY="46.0" mnemonicParsing="false" onMouseClicked="#cargar" prefHeight="32.0" prefWidth="82.0" text="Cargar" />
-            <Button layoutX="45.0" layoutY="100.0" mnemonicParsing="false" onMouseClicked="#limpiar" text="Limpiar" />
+            <Button layoutX="41.0" layoutY="96.0" mnemonicParsing="false" onMouseClicked="#limpiar" text="Limpiar" />
             <Button layoutX="27.0" layoutY="230.0" mnemonicParsing="false" onMouseClicked="#kmeans" prefHeight="32.0" prefWidth="138.0" text="K-Means" />
             <Button layoutX="195.0" layoutY="230.0" mnemonicParsing="false" onMouseClicked="#fuzzy" text="Fuzzy C-Means" />
             <Button layoutX="361.0" layoutY="230.0" mnemonicParsing="false" onMouseClicked="#linkage" prefHeight="32.0" prefWidth="138.0" text="Linkage" />
-            <TextArea fx:id="JFXTextAreaGroups" editable="false" layoutX="27.0" layoutY="276.0" prefHeight="243.0" prefWidth="475.0" />
             <Pane fx:id="JFXPaneContenedorCarga" layoutX="141.0" layoutY="13.0" prefHeight="190.0" prefWidth="358.0">
                <children>
                   <TextArea fx:id="JFXTextAreaDocuments" editable="false" prefHeight="190.0" prefWidth="357.0" />
+               </children>
+            </Pane>
+            <Pane fx:id="JFXPaneContenedorCargaGrupos" layoutX="23.0" layoutY="291.0" prefHeight="243.0" prefWidth="475.0">
+               <children>
+                  <TextArea fx:id="JFXTextAreaGroups" editable="false" prefHeight="243.0" prefWidth="475.0" />
                </children>
             </Pane>
          </children>

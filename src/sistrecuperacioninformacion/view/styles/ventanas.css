@@ -36,6 +36,7 @@ Button:hover{
 .label {
     -fx-font-family: "Times New Roman";
     -fx-text-fill: white;
+    -fx-font-size: 18px;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,1), 10, 0, 0, 1);
 }
 
@@ -45,11 +46,6 @@ Button:hover{
     -fx-font-weight: bold;
 }
 
-/*Estilo para los label que indican la navegacion con las flechas */
-.labelNav {
-    -fx-font-weight: bold;
-    -fx-font-size: 16px;
-}
 
 /*TEXT AREA*/
 .text-area .scroll-pane {
@@ -100,5 +96,5 @@ Button:hover{
 .text-area .content {
     -fx-text-alignment: justify;
     -fx-font-size: 10px;
-    
+
 }
