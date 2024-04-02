@@ -7,7 +7,7 @@ import java.util.ArrayList;
  *
  * @author Aida Rosa
  */
-public class KMeans {
+public class Kmeans {
     
     public static ArrayList<ArrayList<DocumentDetails>> kmeans(ArrayList<DocumentDetails> documents, int k) {
        

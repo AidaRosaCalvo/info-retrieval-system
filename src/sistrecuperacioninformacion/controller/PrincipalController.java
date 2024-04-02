@@ -26,7 +26,7 @@ import javafx.stage.Stage;
 import sistrecuperacioninformacion.Cluster;
 import sistrecuperacioninformacion.DocumentDetails;
 import sistrecuperacioninformacion.FuzzyCMeans;
-import sistrecuperacioninformacion.KMeans;
+import sistrecuperacioninformacion.Kmeans;
 import sistrecuperacioninformacion.Linkage;
 import sistrecuperacioninformacion.Main;
 import sistrecuperacioninformacion.TikaLuceneProcessing;
@@ -178,7 +178,7 @@ public class PrincipalController implements Initializable {
     private void kmeans(MouseEvent event) {
         if (this.documents != null) {
             JFXTextAreaGroups.clear();
-            ArrayList<ArrayList<DocumentDetails>> clusters = KMeans.kmeans(documents, 3);
+            ArrayList<ArrayList<DocumentDetails>> clusters = Kmeans.kmeans(documents, 3);
             String solution = "K-Means:\n";
             for (int i = 0; i < clusters.size(); i++) {
                 solution += "Grupo " + (i + 1) + ":\n";
