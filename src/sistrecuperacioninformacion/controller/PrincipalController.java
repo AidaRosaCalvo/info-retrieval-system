@@ -123,6 +123,7 @@ public class PrincipalController implements Initializable {
     // Cargar los DocDetails
     private void cargar(MouseEvent event) {
         JFXTextAreaDocuments.clear();
+        JFXTextAreaGroups.clear();
         documents = null;
         try {
             // Crear un nuevo DirectoryChooser

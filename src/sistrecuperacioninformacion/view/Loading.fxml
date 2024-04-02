@@ -14,7 +14,7 @@
             <Image url="@../../imagenes/gif_search_loading.gif" />
          </image>
       </ImageView>
-      <Label layoutX="129.0" layoutY="127.0" prefHeight="25.0" prefWidth="116.0" text="Searching ....">
+      <Label layoutX="129.0" layoutY="127.0" prefHeight="25.0" prefWidth="116.0" text="Buscando ....">
          <font>
             <Font name="Times New Roman" size="16.0" />
          </font>
