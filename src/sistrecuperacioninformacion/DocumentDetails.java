@@ -7,12 +7,12 @@ import java.util.ArrayList;
  *
  * @author Aida Rosa
  */
-public class DocDetails {
+public class DocumentDetails {
     
     private String nombre;
     private ArrayList<String> token;
     
-    public DocDetails(String nombre, ArrayList<String> token) {
+    public DocumentDetails(String nombre, ArrayList<String> token) {
         this.nombre = nombre;
         this.token = token;
     }

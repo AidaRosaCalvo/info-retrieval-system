@@ -8,7 +8,7 @@ import java.util.ArrayList;
  * @author Aida Rosa
  */
 public class Linkage {
-    public static double[][] calculateDistanceMatrix(ArrayList<DocDetails> documents) {
+    public static double[][] calculateDistanceMatrix(ArrayList<DocumentDetails> documents) {
         int numDocuments = documents.size();
         double[][] distanceMatrix = new double[numDocuments][numDocuments];
 
@@ -26,7 +26,7 @@ public class Linkage {
         return distanceMatrix;
     }
 
-    private static double calculateDocumentDistance(DocDetails doc1, DocDetails doc2) {
+    private static double calculateDocumentDistance(DocumentDetails doc1, DocumentDetails doc2) {
         // compara la cantidad de tokens compartidos
         ArrayList<String> tokens1 = doc1.getToken();
         ArrayList<String> tokens2 = doc2.getToken();
@@ -42,7 +42,7 @@ public class Linkage {
         return 1.0 - (double) intersectionSize / unionSize;
     }
 
-    public static ArrayList<Cluster> performLinkageClustering(ArrayList<DocDetails> documents, double[][] distanceMatrix) {
+    public static ArrayList<Cluster> performLinkageClustering(ArrayList<DocumentDetails> documents, double[][] distanceMatrix) {
         int numDocuments = documents.size();
 
         // Inicializar una lista de clusters, donde cada documento se encuentra en un cluster individual

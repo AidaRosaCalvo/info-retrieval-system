@@ -24,9 +24,9 @@ import javafx.scene.layout.Pane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import sistrecuperacioninformacion.Cluster;
-import sistrecuperacioninformacion.DocDetails;
+import sistrecuperacioninformacion.DocumentDetails;
 import sistrecuperacioninformacion.FuzzyCMeans;
-import sistrecuperacioninformacion.Kmeans;
+import sistrecuperacioninformacion.KMeans;
 import sistrecuperacioninformacion.Linkage;
 import sistrecuperacioninformacion.Main;
 import sistrecuperacioninformacion.TikaLuceneProcessing;
@@ -50,7 +50,7 @@ public class PrincipalController implements Initializable {
 
     //Mis atributoss
     public static Pane paneGlobal;
-    ArrayList<DocDetails> documents; // Documentos cargados
+    ArrayList<DocumentDetails> documents; // Documentos cargados
 
     //make dragable (permitir que la ventana se arraste)
     private double xOffSet = 0;
@@ -120,7 +120,7 @@ public class PrincipalController implements Initializable {
     }
 
     @FXML
-    // Cargar los DocDetails
+    // Cargar los DocumentDetails
     private void cargar(MouseEvent event) {
         JFXTextAreaDocuments.clear();
         JFXTextAreaGroups.clear();
@@ -178,7 +178,7 @@ public class PrincipalController implements Initializable {
     private void kmeans(MouseEvent event) {
         if (this.documents != null) {
             JFXTextAreaGroups.clear();
-            ArrayList<ArrayList<DocDetails>> clusters = Kmeans.kmeans(documents, 3);
+            ArrayList<ArrayList<DocumentDetails>> clusters = KMeans.kmeans(documents, 3);
             String solution = "K-Means:\n";
             for (int i = 0; i < clusters.size(); i++) {
                 solution += "Grupo " + (i + 1) + ":\n";
@@ -209,7 +209,7 @@ public class PrincipalController implements Initializable {
                 ArrayList<Integer> clusterIndices = clusters_link.get(i).getIndices();
                 solution += clusterIndices + "\n";
                 for (int index : clusterIndices) {
-                    DocDetails doc = documents.get(index);
+                    DocumentDetails doc = documents.get(index);
                     solution += "Nombre del documento: " + doc.getNombre() + "\n";
                 }
                 solution += "\n";
@@ -232,7 +232,7 @@ public class PrincipalController implements Initializable {
             // Imprimir los resultados
             String solution = "Fuzzy C-means:\n";
             for (int i = 0; i < documents.size(); i++) {
-                DocDetails doc = documents.get(i);
+                DocumentDetails doc = documents.get(i);
                 int cluster = clusterAssignments[i];
                 solution += "Documento: " + doc.getNombre() + ", Cluster: " + cluster + " con pertenencia: " + centroids[i][cluster] + "\n";
             }

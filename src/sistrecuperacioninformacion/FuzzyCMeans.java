@@ -18,14 +18,14 @@ public class FuzzyCMeans {
     public static final double EPSILON = 0.001;
 
 
-   public static double[][] getDataMatrix(ArrayList<DocDetails> documents) {
+   public static double[][] getDataMatrix(ArrayList<DocumentDetails> documents) {
         int numDocuments = documents.size();
         int maxTokens = getMaxTokens(documents);
 
         double[][] dataMatrix = new double[numDocuments][maxTokens];
 
         for (int i = 0; i < numDocuments; i++) {
-            DocDetails doc = documents.get(i);
+            DocumentDetails doc = documents.get(i);
             ArrayList<String> tokens = doc.getToken();
 
             for (int j = 0; j < tokens.size(); j++) {
@@ -37,9 +37,9 @@ public class FuzzyCMeans {
         return dataMatrix;
     }
 
-    private static int getMaxTokens(ArrayList<DocDetails> documents) {
+    private static int getMaxTokens(ArrayList<DocumentDetails> documents) {
         int maxTokens = 0;
-        for (DocDetails doc : documents) {
+        for (DocumentDetails doc : documents) {
             int tokensSize = doc.getToken().size();
             if (tokensSize > maxTokens) {
                 maxTokens = tokensSize;
