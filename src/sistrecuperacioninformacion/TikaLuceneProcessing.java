@@ -144,14 +144,15 @@ public class TikaLuceneProcessing {
     }
 
     /**
-     * Este método carga un listado de rutas de documentos partiendo del
- directorio "DataTika" luego procesa cada una de estas rutas para crear
- los documentos con sus respectivos campos, luego se utilizan estos campos
- para extraer los tokens y finalmente se crea un listado de DocumentDetails
- donde cada uno tiene el nombre del documento y el listado de tokens.Este
- procesamiento se hace con ayuda de las librerías Lucene y Tika
- auxiliandose de una instancia de la clase "TrabajoLuceneTika" Devuelve un
- listado de DocumentDetails con nombre y listado de tokens
+     * Este método carga una ruta absoluta de un direcotrio recibida por
+     * parámetro y extrae los ficheros que se encuentren dentro del directorio y
+     * subdirectorios. Este método procesa cada una de las carpetas en búsqueda
+     * de ficheros para crear los documentos con sus respectivos campos, luego
+     * se utilizan estos campos para extraer los tokens y finalmente se crea un
+     * listado de DocumentDetails donde cada uno tiene el nombre del documento y
+     * el listado de tokens.Este procesamiento se hace con ayuda de las
+     * librerías Lucene y Tika. Devuelve un listado de DocumentDetails con
+     * nombre y listado de tokens
      *
      * @param file
      * @return
@@ -166,32 +167,35 @@ public class TikaLuceneProcessing {
         // Buscar documentos
         buscar_archivos(file, files);
 
-        /* Se crea una lista de DocumentDetails(objeto que guarda el nombre y la lista
-         * de tokens asociada al documento)
+        /**
+         * Se crea una lista de DocumentDetails(objeto que guarda el nombre y la
+         * lista de tokens asociada al documento)
          */
         ArrayList<DocumentDetails> docs = new ArrayList();
 
-        /* A partir de los ficheros buscados (files) se utilizan los métodos:
-        - getDocument   
-        -obtener un documento con los campos a partir de un file
-        - getTokens  
-        -obtener tokens filtrados a partir de un documento
-        Y con cada fichero se genera un documento con sus campos, luego se generan 
-        los tokens a partir de ese documento y sus campos, y finalmente se crean
-        un DocumentDetails con el nombre del documento y su listado de tokens        
+        /**
+         * A partir de los ficheros buscados (files) se utilizan los métodos: -
+         * getDocument - obtener un documento con los campos a partir de un file
+         * - getTokens - obtener tokens filtrados a partir de un documento. Con
+         * cada fichero se genera un documento con sus campos, luego se generan
+         * los tokens a partir de ese documento y sus campos, y finalmente se
+         * crean un DocumentDetails con el nombre del documento y su listado de
+         * tokens
          */
         for (String path : files) {
             try {
-                /* Se cargan los campos del archivo que se encuentra en path,
-              y se guardan en un documento Lucene*/
+                /**
+                 * Se cargan los campos del archivo que se encuentra en path, y
+                 * se guardan en un documento Lucene
+                 */
                 Document art1 = getDocument(new File(path));
 
-                /*Se cargan los tokens*/
+                //Se cargan los tokens
                 ArrayList tokenList = getTokens(art1);
 
-                /*Se crea el DocumentDetails con el nombre y los tokens del Document*/
+                //Se crea el DocumentDetails con el nombre y los tokens del Document
                 DocumentDetails d = new DocumentDetails(art1.get("nombre"), tokenList);
-                /*Se agrega a la lista de DocumentDetails*/
+                //Se agrega a la lista de DocumentDetails
                 docs.add(d);
 
             } catch (Exception ex) {

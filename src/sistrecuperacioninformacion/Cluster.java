@@ -1,4 +1,3 @@
-
 package sistrecuperacioninformacion;
 
 import java.util.ArrayList;
@@ -8,7 +7,12 @@ import java.util.ArrayList;
  * @author Aida Rosa
  */
 public class Cluster {
-    
+
+    /**
+     * Esta clase contiene un listado de indices que hacen referencia a los
+     * índices de los documentos que pertenecen al cluster. En un incio la lista
+     * tiene un solo elemento pq cada elemento es un grupo en sí.
+     */
     private ArrayList<Integer> indices;
 
     public Cluster(ArrayList<Integer> indices) {
