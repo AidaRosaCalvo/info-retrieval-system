@@ -23,7 +23,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
-import sistrecuperacioninformacion.Cluster;
 import sistrecuperacioninformacion.DocumentDetails;
 import sistrecuperacioninformacion.FuzzyCMeans;
 import sistrecuperacioninformacion.Kmeans;
@@ -210,8 +209,12 @@ public class PrincipalController implements Initializable {
 
     private void showKmeas(ArrayList<ArrayList<DocumentDetails>> clusters) {
         String solution = "K-Means:\n";
+        int groups = 0;
         for (int i = 0; i < clusters.size(); i++) {
-            solution += "Grupo " + (i + 1) + ":\n";
+            if (clusters.get(i).size() == 0) {
+                continue;
+            }
+            solution += "Grupo " + (++groups) + ":\n";
             for (int j = 0; j < clusters.get(i).size(); j++) {
                 solution += "Documento: " + clusters.get(i).get(j).getNombre() + "\n";
             }
@@ -292,9 +295,9 @@ public class PrincipalController implements Initializable {
                 Thread thread = new Thread(() -> {
                     // Procesar fuzzy
                     JFXTextAreaGroups.clear();
-                    double[][] dataMatrix = FuzzyCMeans.getDataMatrix(documents);
+                    double[][] dataMatrix = FuzzyCMeans.tfIdfTransform(documents);//FuzzyCMeans.getDataMatrix(documents);
                     // Ejecutar Fuzzy C-Means
-                    double[][] membershipMatrix = FuzzyCMeans.fuzzyCMeansClustering(dataMatrix, 2, FuzzyCMeans.FUZZINESS, FuzzyCMeans.EPSILON, FuzzyCMeans.MAX_ITERATIONS);
+                    double[][] membershipMatrix = FuzzyCMeans.fuzzyCMeansClustering(dataMatrix, FuzzyCMeans.NUM_CLUSTERS, FuzzyCMeans.FUZZINESS, FuzzyCMeans.EPSILON, FuzzyCMeans.MAX_ITERATIONS);
                     // Cargar los cluster
                     ArrayList<ArrayList<DocumentDetails>> cluster = FuzzyCMeans.getClusters(membershipMatrix, documents);
 

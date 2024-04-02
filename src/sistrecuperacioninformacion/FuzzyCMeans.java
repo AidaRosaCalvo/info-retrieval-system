@@ -6,6 +6,8 @@
 package sistrecuperacioninformacion;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  *
@@ -19,42 +21,52 @@ public class FuzzyCMeans {
     public static final double EPSILON = 0.001;
 
     /**
-     * Recibe una lista de doctails y devuelve una matriz de tokens donde cada
-     * fila es un documento y las columnas son tokens asociados a ese documento.
-     * Es importante notar que en cada posicion de la matriz lo que se tiene es
-     * el valor numerico del token obtenido a partir de metodo hashCode(). Esto
-     * se hace para calculos posteriores
+     * Método estático para calcular la transformación TF-IDF de una lista de
+     * documentos
      *
      * @param documents
      * @return
      */
-    public static double[][] getDataMatrix(ArrayList<DocumentDetails> documents) {
-        int numDocuments = documents.size();
-        // extraer la máxima cantidad de tokens entre todo el conjuntod de ficheros
-        int maxTokens = getMaxTokens(documents);
-
-        /**
-         * Establece una matriz con una cantidad de filas igual a la cantidad de
-         * documentos y una cantidad de columnas igual al maximo numero de
-         * tokens entre el conjunto de tokens de cada documento.
-         */
-        double[][] dataMatrix = new double[numDocuments][maxTokens];
-
-        /**
-         * Crear la matriz donde en cada posicion i (documento) se ponen los j
-         * tokens correspondientes a ese documento.
-         */
-        for (int i = 0; i < numDocuments; i++) {
-            DocumentDetails doc = documents.get(i);
-            ArrayList<String> tokens = doc.getToken();
-
-            for (int j = 0; j < tokens.size(); j++) {
-                // Utilizar un valor numérico para representar los tokens
-                dataMatrix[i][j] = Math.abs(tokens.get(j).hashCode());
+    public static double[][] tfIdfTransform(List<DocumentDetails> documents) {
+        // 1. Construir vocabulario (todos los tokens únicos a través de los documentos)
+        HashMap<String, Integer> vocabulary = new HashMap<>(); // HashMap para almacenar los tokens únicos y su frecuencia
+        int totalDocuments = documents.size(); // Número total de documentos
+        for (DocumentDetails doc : documents) { // Iterar sobre cada documento en la lista de documentos
+            for (String token : doc.getToken()) { // Iterar sobre los tokens del documento actual
+                // Actualizar la frecuencia del token en el vocabulario
+                vocabulary.put(token, vocabulary.getOrDefault(token, 0) + 1);
             }
         }
 
-        return dataMatrix;
+        // 2. Calcular TF-IDF para cada token en cada documento
+        int numTerms = vocabulary.size(); // Número total de términos en el vocabulario
+        double[][] tfIdfMatrix = new double[totalDocuments][numTerms]; // Matriz para almacenar los valores TF-IDF
+        int docIndex = 0; // Índice del documento actual
+        for (DocumentDetails doc : documents) { // Iterar sobre cada documento en la lista de documentos
+            // 3. Calcular frecuencias de términos para cada token en el documento actual
+            HashMap<String, Integer> termFrequencies = new HashMap<>(); // HashMap para almacenar las frecuencias de términos
+            for (String token : doc.getToken()) { // Iterar sobre los tokens del documento actual
+                // Actualizar la frecuencia del token en el documento actual
+                termFrequencies.put(token, termFrequencies.getOrDefault(token, 0) + 1);
+            }
+
+            int docLength = doc.getToken().size(); // Longitud del documento actual (número de tokens)
+            int termIndex = 0; // Índice del término actual en el vocabulario
+            for (String term : vocabulary.keySet()) { // Iterar sobre cada término en el vocabulario
+                int termFreq = termFrequencies.getOrDefault(term, 0); // Frecuencia del término en el documento actual
+                double tf = 1.0 * termFreq / docLength; // Frecuencia del término normalizada (TF)
+
+                int docFreq = vocabulary.get(term); // Frecuencia del término en todos los documentos (DF)
+                double idf = Math.log(1.0 * totalDocuments / docFreq); // Frecuencia de documento inversa (IDF)
+
+                double tfIdf = tf * idf; // Calcular el valor TF-IDF para el término actual
+                tfIdfMatrix[docIndex][termIndex] = tfIdf; // Almacenar el valor TF-IDF en la matriz
+                termIndex++; // Incrementar el índice del término
+            }
+            docIndex++; // Incrementar el índice del documento
+        }
+
+        return tfIdfMatrix; // Devolver la matriz TF-IDF
     }
 
     /**
