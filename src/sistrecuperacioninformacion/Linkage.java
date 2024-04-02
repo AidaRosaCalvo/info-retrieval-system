@@ -1,12 +1,15 @@
 package sistrecuperacioninformacion;
 
 import java.util.ArrayList;
+import ucar.ma2.Array;
 
 /**
  *
  * @author Aida Rosa
  */
 public class Linkage {
+
+    public static final ArrayList<ArrayList<Cluster>> historicalGroups = new ArrayList<>();
 
     /**
      * Crea la matriz de distancias Para cada documento analiza todos los
@@ -70,12 +73,13 @@ public class Linkage {
      */
     public static ArrayList<Cluster> performLinkageClustering(ArrayList<DocumentDetails> documents, double[][] distanceMatrix) {
         int numDocuments = documents.size();
-
         // Inicializar una lista de clusters, donde cada documento se encuentra en un cluster individual
         ArrayList<Cluster> clusters = new ArrayList<>();
         for (int i = 0; i < numDocuments; i++) {
             clusters.add(new Cluster(i));
         }
+        // Inicializar clusters histórico, primer grupo
+        actualizarHistoricalGroups(clusters);
 
         /*  Realizar el proceso de clustering aglomerativo. Este proceso no para hasta que todos los 
          *  documentos esten dentro de un mismo grupo 
@@ -102,6 +106,8 @@ public class Linkage {
             clusters.remove(minJ);
             clusters.remove(minI);
             clusters.add(mergedCluster);
+            // Agregar los clusters al historico
+            actualizarHistoricalGroups(clusters);
         }
 
         return clusters;
@@ -135,6 +141,7 @@ public class Linkage {
     /**
      * Recibe dos grupos y los une. A partir de dos grupos crea un tercer grupo
      * que es la union de sos dos y lo devuelve
+     *
      * @param cluster1
      * @param cluster2
      * @return
@@ -145,5 +152,11 @@ public class Linkage {
         mergedIndices.addAll(cluster1.getIndices());
         mergedIndices.addAll(cluster2.getIndices());
         return new Cluster(mergedIndices);
+    }
+
+    private static void actualizarHistoricalGroups(ArrayList<Cluster> clusters) {
+        ArrayList<Cluster> newCluster = new ArrayList<>();
+        newCluster.addAll(clusters);
+        historicalGroups.add(newCluster);
     }
 }

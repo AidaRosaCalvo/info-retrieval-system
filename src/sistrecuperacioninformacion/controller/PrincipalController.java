@@ -203,7 +203,24 @@ public class PrincipalController implements Initializable {
             // Realizar el clustering jerárquico aglomerativo utilizando Linkage
             ArrayList<Cluster> clusters_link = Linkage.performLinkageClustering(documents, distanceMatrix);
             // Imprimir los resultados del clustering (Clustering Jerárquico Aglomerativo)
-            String solution = "Linkage:\n";
+            // A continuación se imprimen los distintos grupos obtenidos en cada momento
+            String solution = "Linkage: \n";
+            for (int i = 0; i < Linkage.historicalGroups.size(); i++) {
+                solution += "Fase " + (i + 1) + " :\n";
+                for (int j = 0; j < Linkage.historicalGroups.get(i).size(); j++) {
+                    solution += "Grupo " + (j + 1) + " :\n";
+                    for (int k = 0; k < Linkage.historicalGroups.get(i).get(j).getIndices().size(); k++) {
+                        //Obtener el indice del documento del listado
+                        int index = Linkage.historicalGroups.get(i).get(j).getIndices().get(k);
+                        //Obtener el documento
+                        DocumentDetails doc = documents.get(index);
+                        solution += "Documento: " + doc.getNombre() + "\n";
+                    }
+                    solution += "\n";
+                }
+                solution += "\n";
+            }
+            /* String solution = "Linkage:\n";
             for (int i = 0; i < clusters_link.size(); i++) {
                 solution += "Grupo " + (i + 1) + ":\n";
                 ArrayList<Integer> clusterIndices = clusters_link.get(i).getIndices();
@@ -213,7 +230,7 @@ public class PrincipalController implements Initializable {
                     solution += "Nombre del documento: " + doc.getNombre() + "\n";
                 }
                 solution += "\n";
-            }
+            }*/
             JFXTextAreaGroups.setText(solution);
         } else {
             mensaje();
@@ -221,7 +238,8 @@ public class PrincipalController implements Initializable {
     }
 
     @FXML
-    private void fuzzy(MouseEvent event) {
+    private void fuzzy(MouseEvent event
+    ) {
         if (this.documents != null) {
             JFXTextAreaGroups.clear();
             double[][] dataMatrix = FuzzyCMeans.getDataMatrix(documents);
@@ -235,7 +253,7 @@ public class PrincipalController implements Initializable {
             for (int i = 0; i < cluster.size(); i++) {
                 solution += "Grupo " + i + " :\n";
                 for (int j = 0; j < cluster.get(i).size(); j++) {
-                    solution += "Documento" + (j + 1) + " :\n\t";
+                    solution += "Documento " + (j + 1) + " :\n\t";
                     solution += "Nombre: " + cluster.get(i).get(j).getNombre() + "\n\t";
                     solution += "Grado de pertenecia al grupo: " + cluster.get(i).get(j).getSignificacion();
                     solution += "\n";
