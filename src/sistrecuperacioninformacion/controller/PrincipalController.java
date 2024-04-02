@@ -226,17 +226,22 @@ public class PrincipalController implements Initializable {
             JFXTextAreaGroups.clear();
             double[][] dataMatrix = FuzzyCMeans.getDataMatrix(documents);
             // Ejecutar Fuzzy C-Means
-            double[][] centroids = FuzzyCMeans.fuzzyCMeansClustering(dataMatrix, FuzzyCMeans.NUM_CLUSTERS, FuzzyCMeans.FUZZINESS, FuzzyCMeans.EPSILON, FuzzyCMeans.MAX_ITERATIONS);
-            // Asignar documentos a los grupos correspondientes
-            int[] clusterAssignments = FuzzyCMeans.assignDocumentsToClusters(centroids);
+            double[][] membershipMatrix = FuzzyCMeans.fuzzyCMeansClustering(dataMatrix, FuzzyCMeans.NUM_CLUSTERS, FuzzyCMeans.FUZZINESS, FuzzyCMeans.EPSILON, FuzzyCMeans.MAX_ITERATIONS);
+            // Cargar los cluster
+            ArrayList<ArrayList<DocumentDetails>> cluster = FuzzyCMeans.getClusters(membershipMatrix, documents);
+
             // Imprimir los resultados
-            String solution = "Fuzzy C-means:\n";
-            for (int i = 0; i < documents.size(); i++) {
-                DocumentDetails doc = documents.get(i);
-                int cluster = clusterAssignments[i];
-                solution += "Documento: " + doc.getNombre() + ", Cluster: " + cluster + " con pertenencia: " + centroids[i][cluster] + "\n";
+            String solution = "Fuzzy C-means:\n\n";
+            for (int i = 0; i < cluster.size(); i++) {
+                solution += "Grupo " + i + " :\n";
+                for (int j = 0; j < cluster.get(i).size(); j++) {
+                    solution += "Documento" + (j + 1) + " :\n\t";
+                    solution += "Nombre: " + cluster.get(i).get(j).getNombre() + "\n\t";
+                    solution += "Grado de pertenecia al grupo: " + cluster.get(i).get(j).getSignificacion();
+                    solution += "\n";
+                }
+                solution += "\n";
             }
-            solution += "\n";
             JFXTextAreaGroups.setText(solution);
         } else {
             mensaje();

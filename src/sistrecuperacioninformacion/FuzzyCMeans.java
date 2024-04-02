@@ -343,7 +343,7 @@ public class FuzzyCMeans {
      * @param membershipMatrix
      * @return
      */
-    public static int[] assignDocumentsToClusters(double[][] membershipMatrix) {
+    private static int[] assignDocumentsToClusters(double[][] membershipMatrix) {
         int numDocuments = membershipMatrix.length;
         int numClusters = membershipMatrix[0].length;
         int[] clusterAssignments = new int[numDocuments];
@@ -359,6 +359,39 @@ public class FuzzyCMeans {
             clusterAssignments[i] = bestCluster;
         }
         return clusterAssignments;
+    }
+
+    /**
+     * A partir de una matriz de pertenecia y un listado de documentos devuelve
+     * un listado de clusters. Este método crea un listado de cluster
+     * auxiliándose de assignDocumentsToClusters
+     *
+     * @param membershipMatrix
+     * @param documents
+     * @return
+     */
+    public static ArrayList<ArrayList<DocumentDetails>> getClusters(double[][] membershipMatrix,
+            ArrayList<DocumentDetails> documents) {
+        //Cargar las asignaciones
+        int[] clusterAssignments = assignDocumentsToClusters(membershipMatrix);
+        //Listado de cluster
+        ArrayList<ArrayList<DocumentDetails>> clusters = new ArrayList<>();
+        for (int i = 0; i < membershipMatrix[0].length; i++) {
+            clusters.add(new ArrayList());
+        }
+        //Cargar los cluster
+        for (int i = 0; i < documents.size(); i++) {
+            String nombre = documents.get(i).getNombre();
+
+            ArrayList<String> tokens = documents.get(i).getToken();
+
+            double significacion = membershipMatrix[i][clusterAssignments[i]];
+
+            DocumentDetails document = new DocumentDetails(nombre, tokens, significacion);
+
+            clusters.get(clusterAssignments[i]).add(document);
+        }
+        return clusters;
     }
 
 }
