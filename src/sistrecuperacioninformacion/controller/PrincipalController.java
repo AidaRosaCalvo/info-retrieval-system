@@ -17,12 +17,11 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.control.Alert;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.stage.DirectoryChooser;
-import javafx.stage.FileChooser;
-import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 import sistrecuperacioninformacion.Cluster;
 import sistrecuperacioninformacion.DocDetails;
@@ -66,11 +65,12 @@ public class PrincipalController implements Initializable {
         makeStageDragable();
     }
 
-    /*Metodo que permite  al Stage ser transparente y que pueda moverse
-    cuando su estilo es UNDECORATED*/
+    /**
+     * Metodo que permite al Stage ser transparente y que pueda moverse cuando
+     * su estilo es UNDECORATED.
+     */
     private void makeStageDragable() {
         //Para el paneContenedor global y para el paneBarraTitulo se le establece la propiedad
-
         //PaneGlobal
         paneGlobal.setOnMousePressed((event) -> {
             xOffSet = event.getSceneX();
@@ -124,21 +124,21 @@ public class PrincipalController implements Initializable {
     private void cargar(MouseEvent event) {
         JFXTextAreaDocuments.clear();
         documents = null;
-        try {            
+        try {
             // Crear un nuevo DirectoryChooser
             DirectoryChooser directoryChooser = new DirectoryChooser();
             // Configurar el título del cuadro de diálogo
             directoryChooser.setTitle("Seleccionar carpeta");
             // Mostrar el cuadro de diálogo y esperar a que el usuario seleccione una carpeta
             File selectedDirectory = directoryChooser.showDialog(Main.stage);
-            
+
             if (selectedDirectory != null) {
                 //Cargar la vista Loading
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/sistrecuperacioninformacion/view/Loading.fxml"));
                 Node node = loader.load();
                 JFXPaneContenedorCarga.getChildren().clear();
                 JFXPaneContenedorCarga.getChildren().add(node);
-                
+
                 //Procesar el directorio seleccionado en un hilo aparte
                 Thread thread = new Thread(() -> {
                     try {
@@ -169,64 +169,84 @@ public class PrincipalController implements Initializable {
     @FXML
     private void limpiar(MouseEvent event) {
         JFXTextAreaDocuments.clear();
+        JFXTextAreaGroups.clear();
+        this.documents = null;
     }
 
     @FXML
     private void kmeans(MouseEvent event) {
-        JFXTextAreaGroups.clear();
-        ArrayList<ArrayList<DocDetails>> clusters = Kmeans.kmeans(documents, 3);
-        String solution = "K-Means:\n";
-        for (int i = 0; i < clusters.size(); i++) {
-            solution += "Grupo " + (i + 1) + ":\n";
-            for (int j = 0; j < clusters.get(i).size(); j++) {
-                solution += "Documento: " + clusters.get(i).get(j).getNombre() + "\n";
+        if (this.documents != null) {
+            JFXTextAreaGroups.clear();
+            ArrayList<ArrayList<DocDetails>> clusters = Kmeans.kmeans(documents, 3);
+            String solution = "K-Means:\n";
+            for (int i = 0; i < clusters.size(); i++) {
+                solution += "Grupo " + (i + 1) + ":\n";
+                for (int j = 0; j < clusters.get(i).size(); j++) {
+                    solution += "Documento: " + clusters.get(i).get(j).getNombre() + "\n";
+                }
+                solution += "\n";
             }
-            solution += "\n";
+            // Aunque K sea 3 puede que solo se impriman 2 o menos grupos pq pueden que algunos
+            // se queden vacios cuando se actualicen los centroids y estos coincidan
+            JFXTextAreaGroups.setText(solution);
+        } else {
+            mensaje();
         }
-        // Aunque K sea 3 puede que solo se impriman 2 o menos grupos pq pueden que algunos
-        // se queden vacios cuando se actualicen los centroids y estos coincidan
-        JFXTextAreaGroups.setText(solution);
     }
 
     @FXML
     private void linkage(MouseEvent event) {
-        JFXTextAreaGroups.clear();
-        double[][] distanceMatrix = Linkage.calculateDistanceMatrix(documents);
-        // Realizar el clustering jerárquico aglomerativo utilizando Linkage
-        ArrayList<Cluster> clusters_link = Linkage.performLinkageClustering(documents, distanceMatrix);
-        // Imprimir los resultados del clustering (Clustering Jerárquico Aglomerativo)
-        String solution = "Linkage:\n";
-        for (int i = 0; i < clusters_link.size(); i++) {
-            solution += "Grupo " + (i + 1) + ":\n";
-            ArrayList<Integer> clusterIndices = clusters_link.get(i).getIndices();
-            solution += clusterIndices + "\n";
-            for (int index : clusterIndices) {
-                DocDetails doc = documents.get(index);
-                solution += "Nombre del documento: " + doc.getNombre() + "\n";
-                //    System.out.println("Tokens del documento: " + doc.getToken());
+        if (this.documents != null) {
+            JFXTextAreaGroups.clear();
+            double[][] distanceMatrix = Linkage.calculateDistanceMatrix(documents);
+            // Realizar el clustering jerárquico aglomerativo utilizando Linkage
+            ArrayList<Cluster> clusters_link = Linkage.performLinkageClustering(documents, distanceMatrix);
+            // Imprimir los resultados del clustering (Clustering Jerárquico Aglomerativo)
+            String solution = "Linkage:\n";
+            for (int i = 0; i < clusters_link.size(); i++) {
+                solution += "Grupo " + (i + 1) + ":\n";
+                ArrayList<Integer> clusterIndices = clusters_link.get(i).getIndices();
+                solution += clusterIndices + "\n";
+                for (int index : clusterIndices) {
+                    DocDetails doc = documents.get(index);
+                    solution += "Nombre del documento: " + doc.getNombre() + "\n";
+                }
+                solution += "\n";
             }
-            solution += "\n";
+            JFXTextAreaGroups.setText(solution);
+        } else {
+            mensaje();
         }
-        JFXTextAreaGroups.setText(solution);
     }
 
     @FXML
     private void fuzzy(MouseEvent event) {
-        JFXTextAreaGroups.clear();
-        double[][] dataMatrix = FuzzyCMeans.getDataMatrix(documents);
-        // Ejecutar Fuzzy C-Means
-        double[][] centroids = FuzzyCMeans.fuzzyCMeansClustering(dataMatrix, FuzzyCMeans.NUM_CLUSTERS, FuzzyCMeans.FUZZINESS, FuzzyCMeans.EPSILON, FuzzyCMeans.MAX_ITERATIONS);
-        // Asignar documentos a los grupos correspondientes
-        int[] clusterAssignments = FuzzyCMeans.assignDocumentsToClusters(centroids);
-        // Imprimir los resultados
-        String solution = "Fuzzy C-means:\n";
-        for (int i = 0; i < documents.size(); i++) {
-            DocDetails doc = documents.get(i);
-            int cluster = clusterAssignments[i];
-            solution += "Documento: " + doc.getNombre() + ", Cluster: " + cluster + " con pertenencia: " + centroids[i][cluster] + "\n";
+        if (this.documents != null) {
+            JFXTextAreaGroups.clear();
+            double[][] dataMatrix = FuzzyCMeans.getDataMatrix(documents);
+            // Ejecutar Fuzzy C-Means
+            double[][] centroids = FuzzyCMeans.fuzzyCMeansClustering(dataMatrix, FuzzyCMeans.NUM_CLUSTERS, FuzzyCMeans.FUZZINESS, FuzzyCMeans.EPSILON, FuzzyCMeans.MAX_ITERATIONS);
+            // Asignar documentos a los grupos correspondientes
+            int[] clusterAssignments = FuzzyCMeans.assignDocumentsToClusters(centroids);
+            // Imprimir los resultados
+            String solution = "Fuzzy C-means:\n";
+            for (int i = 0; i < documents.size(); i++) {
+                DocDetails doc = documents.get(i);
+                int cluster = clusterAssignments[i];
+                solution += "Documento: " + doc.getNombre() + ", Cluster: " + cluster + " con pertenencia: " + centroids[i][cluster] + "\n";
+            }
+            solution += "\n";
+            JFXTextAreaGroups.setText(solution);
+        } else {
+            mensaje();
         }
-        solution += "\n";
-        JFXTextAreaGroups.setText(solution);
     }
 
+    private void mensaje() {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setHeaderText(null);
+        alert.setTitle("Error");
+        alert.setContentText("Debe cargar los documentos");
+        alert.showAndWait();
+    }
 }
