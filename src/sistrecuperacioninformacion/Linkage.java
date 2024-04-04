@@ -5,7 +5,7 @@ import ucar.ma2.Array;
 
 /**
  *
- * @author Aida Rosa
+ * @author Daniel Dans
  */
 public class Linkage {
 
@@ -49,6 +49,7 @@ public class Linkage {
      * @return
      */
     private static double calculateDocumentDistance(DocumentDetails doc1, DocumentDetails doc2) {
+
         // compara la cantidad de tokens compartidos
         ArrayList<String> tokens1 = doc1.getToken();
         ArrayList<String> tokens2 = doc2.getToken();
@@ -61,7 +62,11 @@ public class Linkage {
         }
 
         int unionSize = tokens1.size() + tokens2.size() - intersectionSize;
-        return 1.0 - (double) intersectionSize / unionSize;
+        if (unionSize == 0) {
+            return 0;
+        } else {
+            return 1.0 - (double) intersectionSize / unionSize;
+        }
     }
 
     /**

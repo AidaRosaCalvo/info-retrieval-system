@@ -324,7 +324,7 @@ public class PrincipalController implements Initializable {
     private void showfuzzy(ArrayList<ArrayList<DocumentDetails>> cluster) {
         String solution = "Fuzzy C-means:\n\n";
         for (int i = 0; i < cluster.size(); i++) {
-            solution += "Grupo " + i + " :\n";
+            solution += "Grupo " + (i + 1) + " :\n";
             for (int j = 0; j < cluster.get(i).size(); j++) {
                 solution += "Documento " + (j + 1) + " :\n\t";
                 solution += "Nombre: " + cluster.get(i).get(j).getNombre() + "\n\t";

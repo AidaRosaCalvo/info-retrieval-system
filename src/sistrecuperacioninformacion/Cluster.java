@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 /**
  *
- * @author Aida Rosa
+ * @author Daniel Dans
  */
 public class Cluster {
 
