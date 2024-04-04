@@ -69,24 +69,7 @@ public class FuzzyCMeans {
         return tfIdfMatrix; // Devolver la matriz TF-IDF
     }
 
-    /**
-     * Recube una lista de documentos y busca entre todos el que más tokens
-     * tiene y devuelve esa cantidad.
-     *
-     * @param documents
-     * @return maxima cantidad de tokens entre todos los documentos
-     */
-    private static int getMaxTokens(ArrayList<DocumentDetails> documents) {
-        int maxTokens = 0;
-        for (DocumentDetails doc : documents) {
-            int tokensSize = doc.getToken().size();
-            if (tokensSize > maxTokens) {
-                maxTokens = tokensSize;
-            }
-        }
-        return maxTokens;
-    }
-
+    
     /**
      * Devuelve la matriz de pertenencia. Este método a partir de una matriz de
      * documentos, un factor difuso m, un numero de cluster, un valor de
